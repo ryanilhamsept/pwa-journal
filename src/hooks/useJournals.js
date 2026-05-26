@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createJournal, deleteJournal, listJournals, updateJournal } from '../services/googleSheets';
 import { getDayKey } from '../utils/date';
 
@@ -31,29 +31,33 @@ function sortEntries(entries) {
   return [...entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
-function mergeEntries(localEntries, sheetEntries) {
+function mergeSheetSnapshot(localEntries, sheetEntries) {
+  const sheetItems = sheetEntries
+    .map((entry) =>
+      normalizeEntry({
+        ...entry,
+        syncId: entry.id,
+        syncStatus: 'synced',
+      }),
+    )
+    .filter((entry) => entry.body.trim());
+
+  const localOnlyItems = localEntries
+    .map(normalizeEntry)
+    .filter((entry) => entry.body.trim() && entry.syncStatus !== 'synced');
+
   const merged = new Map();
 
-  for (const entry of localEntries) {
-    const normalized = normalizeEntry(entry);
-    merged.set(normalized.syncId || normalized.id, normalized);
+  for (const entry of sheetItems) {
+    merged.set(entry.syncId || entry.id, entry);
   }
 
-  for (const entry of sheetEntries) {
-    const normalized = normalizeEntry({
-      ...entry,
-      syncId: entry.id,
-      syncStatus: 'synced',
-    });
-    const key = normalized.syncId || normalized.id;
-    const existing = merged.get(key);
-
-    if (!existing || new Date(normalized.updatedAt) >= new Date(existing.updatedAt)) {
-      merged.set(key, normalized);
-    }
+  for (const entry of localOnlyItems) {
+    const key = entry.syncId || entry.id;
+    if (!merged.has(key)) merged.set(key, entry);
   }
 
-  return sortEntries(Array.from(merged.values()).filter((entry) => entry.body.trim()));
+  return sortEntries(Array.from(merged.values()));
 }
 
 export function useJournals() {
@@ -66,6 +70,19 @@ export function useJournals() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   }, [entries]);
 
+  const refreshFromSheet = useCallback(async ({ showLoading = false } = {}) => {
+    if (showLoading) setIsLoadingSheet(true);
+
+    try {
+      const sheetEntries = await listJournals();
+      setEntries((current) => mergeSheetSnapshot(current, sheetEntries));
+    } catch {
+      // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum bisa diakses.
+    } finally {
+      if (showLoading) setIsLoadingSheet(false);
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -75,9 +92,9 @@ export function useJournals() {
       try {
         const sheetEntries = await listJournals();
         if (cancelled) return;
-        setEntries((current) => mergeEntries(current, sheetEntries));
+        setEntries((current) => mergeSheetSnapshot(current, sheetEntries));
       } catch {
-        // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum support list.
+        // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum bisa diakses.
       } finally {
         if (!cancelled) setIsLoadingSheet(false);
       }
@@ -89,6 +106,22 @@ export function useJournals() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    function refreshWhenVisible() {
+      if (document.visibilityState === 'visible') {
+        refreshFromSheet();
+      }
+    }
+
+    window.addEventListener('focus', refreshFromSheet);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+
+    return () => {
+      window.removeEventListener('focus', refreshFromSheet);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, [refreshFromSheet]);
 
   const stats = useMemo(() => {
     const totalWords = entries.reduce(
@@ -216,6 +249,7 @@ export function useJournals() {
     entries,
     stats,
     isLoadingSheet,
+    refreshFromSheet,
     saveEntry,
     removeEntry,
     retryUnsynced,
