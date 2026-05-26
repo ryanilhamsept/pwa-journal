@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 
 const MOODS = ['😊', '😁', '😌', '🥲', '😐', '😔'];
 
-export default function JournalComposer({ onSave, message, editingEntry }) {
+export default function JournalComposer({ onSave, editingEntry }) {
   const [body, setBody] = useState('');
   const [mood, setMood] = useState('😊');
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!editingEntry) return;
+    setBody(editingEntry.body);
+    setMood(editingEntry.mood);
+  }, [editingEntry]);
 
   function submit(event) {
     event.preventDefault();
@@ -14,11 +20,6 @@ export default function JournalComposer({ onSave, message, editingEntry }) {
     if (!saved) return;
     setBody('');
     setMood('😊');
-  }
-
-  if (editingEntry && body !== editingEntry.body) {
-    setBody(editingEntry.body);
-    setMood(editingEntry.mood);
   }
 
   return (
@@ -66,8 +67,6 @@ export default function JournalComposer({ onSave, message, editingEntry }) {
       <button type="submit" className="save-button" aria-label="Simpan catatan">
         <ChevronRight size={30} strokeWidth={4} />
       </button>
-
-      {message && <p className="status">{message}</p>}
     </form>
   );
 }

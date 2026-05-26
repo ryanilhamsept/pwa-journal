@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createJournal, deleteJournal, updateJournal } from '../services/googleSheets';
+import { createJournal, deleteJournal, listJournals, updateJournal } from '../services/googleSheets';
 import { getDayKey } from '../utils/date';
 
 const STORAGE_KEY = 'ilham-journal.entries';
@@ -14,29 +14,76 @@ function loadEntries() {
 
 function normalizeEntry(entry) {
   const now = new Date().toISOString();
+  const syncId = entry.syncId || entry.id || null;
+
   return {
     id: entry.id || crypto.randomUUID(),
     body: entry.body || '',
     mood: entry.mood || '😊',
-    syncId: entry.syncId || null,
-    syncStatus: entry.syncStatus || 'local',
+    syncId,
+    syncStatus: entry.syncStatus || (syncId ? 'synced' : 'local'),
     createdAt: entry.createdAt || now,
     updatedAt: entry.updatedAt || entry.createdAt || now,
   };
 }
 
+function sortEntries(entries) {
+  return [...entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+function mergeEntries(localEntries, sheetEntries) {
+  const merged = new Map();
+
+  for (const entry of localEntries) {
+    const normalized = normalizeEntry(entry);
+    merged.set(normalized.syncId || normalized.id, normalized);
+  }
+
+  for (const entry of sheetEntries) {
+    const normalized = normalizeEntry({
+      ...entry,
+      syncId: entry.id,
+      syncStatus: 'synced',
+    });
+    const key = normalized.syncId || normalized.id;
+    const existing = merged.get(key);
+
+    if (!existing || new Date(normalized.updatedAt) >= new Date(existing.updatedAt)) {
+      merged.set(key, normalized);
+    }
+  }
+
+  return sortEntries(Array.from(merged.values()).filter((entry) => entry.body.trim()));
+}
+
 export function useJournals() {
   const [entries, setEntries] = useState(() =>
-    loadEntries()
-      .map(normalizeEntry)
-      .filter((entry) => entry.body.trim())
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+    sortEntries(loadEntries().map(normalizeEntry).filter((entry) => entry.body.trim())),
   );
-  const [message, setMessage] = useState('');
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   }, [entries]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFromSheet() {
+      try {
+        const sheetEntries = await listJournals();
+        if (cancelled) return;
+        setEntries((current) => mergeEntries(current, sheetEntries));
+      } catch {
+        // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum support list.
+      }
+    }
+
+    loadFromSheet();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const stats = useMemo(() => {
     const totalWords = entries.reduce(
@@ -66,12 +113,10 @@ export function useJournals() {
             : item,
         ),
       );
-      setMessage(result.skipped ? 'Saved locally' : 'Saved to Sheet');
     } catch {
       setEntries((current) =>
         current.map((item) => (item.id === entry.id ? { ...item, syncStatus: 'failed' } : item)),
       );
-      setMessage('Saved locally. Sheet sync failed.');
     }
   }
 
@@ -94,21 +139,16 @@ export function useJournals() {
             : item,
         ),
       );
-      setMessage(result.skipped ? 'Updated locally' : 'Updated in Sheet');
     } catch {
       setEntries((current) =>
         current.map((item) => (item.id === entry.id ? { ...item, syncStatus: 'failed' } : item)),
       );
-      setMessage('Updated locally. Sheet sync failed.');
     }
   }
 
   function saveEntry({ body, mood, editingId }) {
     const trimmed = body.trim();
-    if (!trimmed) {
-      setMessage('Write something first');
-      return null;
-    }
+    if (!trimmed) return null;
 
     const now = new Date().toISOString();
 
@@ -128,7 +168,6 @@ export function useJournals() {
         }),
       );
       setTimeout(() => syncUpdate(updatedEntry), 0);
-      setMessage('Updating journal...');
       return updatedEntry;
     }
 
@@ -142,20 +181,18 @@ export function useJournals() {
     });
     setEntries((current) => [entry, ...current]);
     setTimeout(() => syncCreate(entry), 0);
-    setMessage('Saving to Sheet...');
     return entry;
   }
 
   async function removeEntry(entry) {
     setEntries((current) => current.filter((item) => item.id !== entry.id));
-    setMessage('Journal deleted');
 
     if (!entry.syncId) return;
 
     try {
       await deleteJournal(entry.syncId);
     } catch {
-      setMessage('Deleted locally. Sheet delete failed.');
+      // Kalau delete ke Sheet gagal, data lokal tetap sudah bersih.
     }
   }
 
@@ -173,8 +210,6 @@ export function useJournals() {
   return {
     entries,
     stats,
-    message,
-    setMessage,
     saveEntry,
     removeEntry,
     retryUnsynced,

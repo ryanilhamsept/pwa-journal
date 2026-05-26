@@ -2,9 +2,9 @@
   color-scheme: light;
   --ink: #17151f;
   --muted: #7b8190;
-  --purple: #8b5cf6;
-  --purple-dark: #7c3aed;
-  --purple-soft: #eee7ff;
+  --purple: #0a84ff;
+  --purple-dark: #007aff;
+  --purple-soft: #e6f2ff;
   --card: #ffffff;
   --page: #f5f4fa;
 }
@@ -14,19 +14,26 @@
 }
 
 html {
+  min-height: 100%;
   background: #eeeef8;
 }
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
-  display: grid;
-  place-items: center;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.94), transparent 30%),
     linear-gradient(115deg, #f8f5ff 0%, #e6e8ff 48%, #f7f5ff 100%);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 button,
@@ -46,19 +53,21 @@ button {
 
 .phone-shell {
   position: relative;
-  width: min(100vw, 430px);
+  width: 100%;
+  max-width: 430px;
   min-height: 100vh;
-  overflow: hidden;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow-x: hidden;
   background: var(--page);
-  box-shadow: 0 28px 90px rgba(72, 62, 128, 0.25), inset 0 0 0 11px rgba(255, 255, 255, 0.58);
 }
 
 .hero-panel {
-  padding: 32px 26px 54px;
+  padding: max(22px, env(safe-area-inset-top)) clamp(16px, 5vw, 26px) 48px;
   background:
     radial-gradient(circle at 16% 8%, rgba(255, 255, 255, 0.95), transparent 36%),
     radial-gradient(circle at 82% 3%, rgba(255, 255, 255, 0.72), transparent 28%),
-    linear-gradient(150deg, #fbfdff 0%, #dce6ff 43%, #8fa8ff 100%);
+    linear-gradient(150deg, #fbfdff 0%, #e8f3ff 43%, #8ec5ff 100%);
 }
 
 .app-header {
@@ -68,7 +77,7 @@ button {
 }
 
 .logo {
-  font-size: 1.48rem;
+  font-size: clamp(1.28rem, 7vw, 1.48rem);
   font-weight: 900;
   letter-spacing: 0;
 }
@@ -81,28 +90,32 @@ button {
 .content-panel {
   position: relative;
   margin-top: -22px;
-  padding: 18px 18px 104px;
+  padding: 16px clamp(12px, 4.4vw, 18px) calc(110px + env(safe-area-inset-bottom));
   border-radius: 28px 28px 0 0;
   background: rgba(247, 247, 250, 0.96);
 }
 
 .stats-card,
 .journal-card {
-  border-radius: 24px;
+  border-radius: clamp(20px, 6vw, 24px);
   background: var(--card);
   box-shadow: 0 14px 34px rgba(64, 70, 112, 0.09);
 }
 
 .stats-card {
-  padding: 16px 14px 14px;
+  padding: clamp(13px, 3.8vw, 16px) clamp(9px, 3.8vw, 14px) 14px;
   margin-bottom: 24px;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   text-align: center;
+}
+
+.stat-item {
+  min-width: 0;
 }
 
 .stat-item + .stat-item {
@@ -111,8 +124,9 @@ button {
 
 .stat-item p {
   margin: 0;
+  overflow-wrap: anywhere;
   color: #838898;
-  font-size: 0.85rem;
+  font-size: clamp(0.7rem, 3.3vw, 0.85rem);
   font-weight: 750;
 }
 
@@ -120,22 +134,22 @@ button {
   display: block;
   margin-top: 8px;
   color: var(--purple-dark);
-  font-size: 2.05rem;
+  font-size: clamp(1.6rem, 10vw, 2.05rem);
   line-height: 1;
 }
 
 .mood-composer {
   position: relative;
   display: grid;
-  grid-template-columns: 48px 1fr 30px;
+  grid-template-columns: clamp(42px, 12vw, 48px) minmax(0, 1fr) 34px;
   align-items: center;
-  gap: 10px;
+  gap: clamp(12px, 3.5vw, 16px);
   margin-top: 22px;
-  padding: 11px 14px 11px 10px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #9f7cff, #8056ee);
+  padding: 12px clamp(12px, 3.8vw, 18px) 12px clamp(10px, 3.2vw, 12px);
+  border-radius: 17px;
+  background: linear-gradient(135deg, #22b8ff, #007aff);
   color: white;
-  box-shadow: 0 10px 22px rgba(128, 86, 238, 0.28);
+  box-shadow: 0 10px 22px rgba(0, 122, 255, 0.26);
 }
 
 .mood-picker {
@@ -145,21 +159,21 @@ button {
 .mood-icon {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: clamp(42px, 12vw, 48px);
+  height: clamp(42px, 12vw, 48px);
   border-radius: 50%;
   background: white;
-  font-size: 1.42rem;
+  font-size: clamp(1.2rem, 6vw, 1.42rem);
   box-shadow: 0 6px 16px rgba(65, 42, 156, 0.12);
 }
 
 .mood-options {
   position: absolute;
-  top: 57px;
+  top: 54px;
   left: -2px;
   z-index: 4;
   display: grid;
-  grid-template-columns: repeat(3, 42px);
+  grid-template-columns: repeat(3, 40px);
   gap: 7px;
   padding: 9px;
   border-radius: 18px;
@@ -170,12 +184,12 @@ button {
 .mood-options button {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #f5f1ff;
+  background: #eef7ff;
   color: var(--ink);
-  font-size: 1.28rem;
+  font-size: 1.22rem;
 }
 
 .mood-options button.active {
@@ -188,22 +202,24 @@ button {
 }
 
 .mood-composer span {
+  overflow-wrap: anywhere;
+  font-size: clamp(0.93rem, 4.1vw, 1rem);
   font-weight: 850;
-  line-height: 1.1;
+  line-height: 1.18;
 }
 
 .mood-composer textarea {
   width: 100%;
   min-height: 22px;
   max-height: 76px;
-  margin-top: 4px;
+  margin-top: 8px;
   padding: 0;
   border: 0;
   outline: none;
   resize: none;
   background: transparent;
   color: white;
-  font-size: 0.92rem;
+  font-size: clamp(0.84rem, 3.7vw, 0.92rem);
   line-height: 1.35;
 }
 
@@ -214,21 +230,20 @@ button {
 .save-button {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: transparent;
   color: white;
 }
 
 .status {
-  position: absolute;
-  left: 62px;
-  bottom: -28px;
-  margin: 0;
-  color: var(--purple-dark);
+  grid-column: 1 / -1;
+  margin: 2px 0 -2px;
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.78rem;
   font-weight: 800;
+  text-align: center;
 }
 
 .journal-section {
@@ -242,14 +257,14 @@ button {
 
 .section-heading h1 {
   margin: 0;
-  font-size: 1.38rem;
+  font-size: clamp(1.22rem, 6.2vw, 1.38rem);
   line-height: 1.1;
 }
 
 .section-heading p {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: clamp(0.87rem, 3.8vw, 0.95rem);
   font-weight: 650;
 }
 
@@ -259,13 +274,13 @@ button {
 }
 
 .journal-card {
-  padding: 17px 15px 18px;
+  padding: clamp(14px, 4vw, 17px) clamp(12px, 4vw, 15px) 18px;
 }
 
 .journal-card-top {
   display: grid;
-  grid-template-columns: 52px 1fr auto;
-  gap: 12px;
+  grid-template-columns: clamp(44px, 13vw, 52px) minmax(0, 1fr);
+  gap: 10px;
   align-items: start;
   margin-bottom: 16px;
 }
@@ -273,16 +288,16 @@ button {
 .journal-mood {
   display: grid;
   place-items: center;
-  width: 50px;
-  height: 50px;
+  width: clamp(44px, 13vw, 50px);
+  height: clamp(44px, 13vw, 50px);
   border-radius: 50%;
   background: #fafafa;
   box-shadow: inset 0 0 0 1px #f0f1f6;
-  font-size: 1.35rem;
+  font-size: clamp(1.16rem, 5.4vw, 1.35rem);
 }
 
 .journal-title {
-  max-width: 155px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -292,17 +307,20 @@ button {
 .journal-meta {
   margin-top: 7px;
   color: #747985;
-  font-size: 0.86rem;
+  font-size: clamp(0.8rem, 3.6vw, 0.86rem);
   font-weight: 700;
 }
 
 .journal-tag {
-  min-width: 88px;
-  padding: 10px 11px;
-  border-radius: 7px;
-  background: #dfe7ff;
-  color: #6e59cc;
-  font-size: 0.84rem;
+  grid-column: 2;
+  justify-self: start;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #e5f1ff;
+  color: #006edb;
+  font-size: 0.82rem;
   font-weight: 800;
 }
 
@@ -312,7 +330,7 @@ button {
   height: 7px;
   margin-right: 7px;
   border-radius: 50%;
-  background: #385cff;
+  background: #0a84ff;
   content: "";
   vertical-align: 1px;
 }
@@ -321,8 +339,9 @@ button {
   display: -webkit-box;
   overflow: hidden;
   margin: 0 0 10px;
+  overflow-wrap: anywhere;
   color: #575b66;
-  font-size: 1rem;
+  font-size: clamp(0.94rem, 4.1vw, 1rem);
   line-height: 1.42;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -350,7 +369,7 @@ button {
   inset: 0;
   z-index: 10;
   min-height: 100%;
-  padding: 28px 22px 106px;
+  padding: max(22px, env(safe-area-inset-top)) clamp(16px, 5vw, 22px) calc(106px + env(safe-area-inset-bottom));
   overflow-y: auto;
   background: linear-gradient(160deg, #eef3ff 0%, #f7f4ff 44%, #f8f7fb 100%);
 }
@@ -364,6 +383,7 @@ button {
 
 .back-button {
   display: grid;
+  flex: 0 0 auto;
   place-items: center;
   width: 48px;
   height: 48px;
@@ -381,17 +401,17 @@ button {
 }
 
 .detail-header h2 {
-  max-width: 275px;
+  max-width: min(275px, 68vw);
   overflow: hidden;
   margin: 3px 0 0;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 1.35rem;
+  font-size: clamp(1.15rem, 5.5vw, 1.35rem);
 }
 
 .detail-card {
   min-height: 62vh;
-  padding: 24px 22px;
+  padding: clamp(20px, 5vw, 24px) clamp(16px, 5vw, 22px);
   border-radius: 28px;
   background: white;
   box-shadow: 0 18px 38px rgba(64, 70, 112, 0.1);
@@ -418,13 +438,13 @@ button {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   color: #3d414d;
-  font-size: 1.06rem;
+  font-size: clamp(0.98rem, 4vw, 1.06rem);
   line-height: 1.62;
 }
 
 .detail-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 28px;
 }
@@ -438,7 +458,7 @@ button {
 .detail-action.edit {
   background: var(--purple);
   color: white;
-  box-shadow: 0 10px 22px rgba(128, 86, 238, 0.24);
+  box-shadow: 0 10px 22px rgba(0, 122, 255, 0.24);
 }
 
 .detail-action.delete {
@@ -448,28 +468,33 @@ button {
 
 .floating-write {
   position: fixed;
-  right: max(24px, calc((100vw - 430px) / 2 + 24px));
-  bottom: 91px;
+  right: calc(16px + env(safe-area-inset-right));
+  bottom: calc(90px + env(safe-area-inset-bottom));
+  z-index: 8;
   display: grid;
   place-items: center;
-  width: 62px;
-  height: 62px;
+  width: clamp(56px, 15vw, 62px);
+  height: clamp(56px, 15vw, 62px);
   border-radius: 50%;
   background: var(--purple);
   color: white;
-  box-shadow: 0 10px 24px rgba(94, 65, 202, 0.36);
+  box-shadow: 0 10px 24px rgba(0, 122, 255, 0.34);
 }
 
 .bottom-nav {
   position: fixed;
-  right: max(0px, calc((100vw - 430px) / 2));
+  right: 0;
   bottom: 0;
-  left: max(0px, calc((100vw - 430px) / 2));
+  left: 0;
+  z-index: 7;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 84px;
-  padding: 10px 20px 12px;
+  width: 100%;
+  max-width: 430px;
+  height: calc(78px + env(safe-area-inset-bottom));
+  margin: 0 auto;
+  padding: 10px 20px calc(12px + env(safe-area-inset-bottom));
   border-radius: 24px 24px 0 0;
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 -12px 28px rgba(64, 70, 112, 0.08);
@@ -486,36 +511,165 @@ button {
 }
 
 @media (min-width: 431px) {
+  body {
+    display: grid;
+    place-items: center;
+  }
+
   .phone-shell {
     min-height: 920px;
-    margin: 20px 0;
+    margin: 20px auto;
     border-radius: 42px;
-  }
-
-  .bottom-nav {
-    border-radius: 24px 24px 34px 34px;
-  }
-}
-
-@media (max-width: 380px) {
-  .hero-panel {
-    padding-inline: 18px;
-  }
-
-  .content-panel {
-    padding-inline: 14px;
-  }
-
-  .stat-item strong {
-    font-size: 1.72rem;
+    overflow: hidden;
+    box-shadow: 0 28px 90px rgba(72, 62, 128, 0.25), inset 0 0 0 11px rgba(255, 255, 255, 0.58);
   }
 
   .journal-card-top {
-    grid-template-columns: 46px 1fr;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 12px;
   }
 
   .journal-tag {
-    grid-column: 2;
-    justify-self: start;
+    grid-column: auto;
+    justify-self: end;
+    min-width: 88px;
+    padding: 10px 11px;
+  }
+
+  .floating-write {
+    right: max(24px, calc((100vw - 430px) / 2 + 24px));
+    bottom: calc(91px + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav {
+    right: auto;
+    left: 50%;
+    width: min(100vw, 430px);
+    border-radius: 24px 24px 34px 34px;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-panel {
+    padding-inline: 12px;
+  }
+
+  .content-panel {
+    padding-inline: 10px;
+  }
+
+  .stats-card {
+    border-radius: 20px;
+  }
+
+  .stat-item + .stat-item {
+    border-left-width: 1px;
+  }
+
+  .mood-composer {
+    grid-template-columns: 40px minmax(0, 1fr) 32px;
+    border-radius: 14px;
+  }
+
+  .mood-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .journal-card-top {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .journal-tag {
+    font-size: 0.78rem;
+  }
+}
+
+.composer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  padding: 0 clamp(12px, 4vw, 18px) calc(16px + env(safe-area-inset-bottom));
+}
+
+.composer-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(23, 21, 31, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.composer-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 394px;
+  padding: 18px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 24px 70px rgba(63, 50, 124, 0.28);
+  animation: sheet-in 180ms ease-out;
+}
+
+.composer-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.composer-sheet-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.composer-sheet-header h2 {
+  margin: 3px 0 0;
+  font-size: 1.22rem;
+  line-height: 1.1;
+}
+
+.composer-close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f1eff8;
+  color: var(--ink);
+}
+
+.composer-sheet .mood-composer {
+  margin-top: 0;
+  box-shadow: 0 14px 30px rgba(0, 122, 255, 0.24);
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 431px) {
+  .composer-overlay {
+    align-items: center;
+    padding-bottom: 0;
   }
 }

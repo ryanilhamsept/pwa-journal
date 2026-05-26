@@ -1,4 +1,4 @@
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyPhDnqDaVqQbtPP4B4q7C4ceu0xuMuXXzYsCgj__K1fX6zNNJuRGbTuoiZ18zr9RR3lA/exec';
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxPade43GSg4MbHM9bSHhC1FrmQS2PqgvWQ0u-vO4VJTkvsAilnsjnCuwomHgBaJ15wrQ/exec';
 
 async function requestSheet(payload) {
   const response = await fetch(WEBHOOK_URL, {
@@ -17,6 +17,11 @@ async function requestSheet(payload) {
   }
 
   return result;
+}
+
+export async function listJournals() {
+  const result = await requestSheet({ action: 'list' });
+  return result.entries || result.data || [];
 }
 
 export async function createJournal(entry) {
