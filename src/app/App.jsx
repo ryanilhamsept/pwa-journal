@@ -7,7 +7,7 @@ import StatCard from '../components/ui/StatCard';
 import { useJournals } from '../hooks/useJournals';
 
 export default function App() {
-  const { entries, stats, saveEntry, removeEntry } = useJournals();
+  const { entries, stats, isLoadingSheet, saveEntry, removeEntry } = useJournals();
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [editingEntry, setEditingEntry] = useState(null);
   const [composerOpen, setComposerOpen] = useState(false);
@@ -69,7 +69,7 @@ export default function App() {
             <h1>Your journal</h1>
             <p>On this day, you felt Comfortable</p>
           </div>
-          <JournalList entries={entries} onView={setSelectedEntry} />
+          <JournalList entries={entries} isLoading={isLoadingSheet} onView={setSelectedEntry} />
         </section>
       </section>
 

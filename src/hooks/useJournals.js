@@ -60,6 +60,7 @@ export function useJournals() {
   const [entries, setEntries] = useState(() =>
     sortEntries(loadEntries().map(normalizeEntry).filter((entry) => entry.body.trim())),
   );
+  const [isLoadingSheet, setIsLoadingSheet] = useState(true);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
@@ -69,12 +70,16 @@ export function useJournals() {
     let cancelled = false;
 
     async function loadFromSheet() {
+      setIsLoadingSheet(true);
+
       try {
         const sheetEntries = await listJournals();
         if (cancelled) return;
         setEntries((current) => mergeEntries(current, sheetEntries));
       } catch {
         // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum support list.
+      } finally {
+        if (!cancelled) setIsLoadingSheet(false);
       }
     }
 
@@ -210,6 +215,7 @@ export function useJournals() {
   return {
     entries,
     stats,
+    isLoadingSheet,
     saveEntry,
     removeEntry,
     retryUnsynced,
