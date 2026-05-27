@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, PenLine, X } from 'lucide-react';
+import { PenLine, X } from 'lucide-react';
 import JournalComposer from '../components/JournalComposer';
 import JournalDetail from '../components/JournalDetail';
 import JournalList from '../components/JournalList';
@@ -13,14 +13,12 @@ export default function App() {
   const [composerOpen, setComposerOpen] = useState(false);
 
   function handleSave(payload) {
-    const saved = saveEntry({ ...payload, editingId: editingEntry?.id });
-    if (saved) setEditingEntry(null);
-    return saved;
+    return saveEntry(payload);
   }
 
   function handlePopupSave(payload) {
-    const saved = saveEntry(payload);
-    if (saved) setComposerOpen(false);
+    const saved = saveEntry({ ...payload, editingId: editingEntry?.id });
+    if (saved) closeComposer();
     return saved;
   }
 
@@ -34,8 +32,7 @@ export default function App() {
   function handleEdit(entry) {
     setEditingEntry(entry);
     setSelectedEntry(null);
-    setComposerOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setComposerOpen(true);
   }
 
   function openComposer() {
@@ -44,12 +41,17 @@ export default function App() {
     setComposerOpen(true);
   }
 
+  function closeComposer() {
+    setComposerOpen(false);
+    setEditingEntry(null);
+  }
+
   return (
     <main className="phone-shell" aria-label="Ilham Journal">
       <section className="hero-panel">
         <div className="app-header">
           <div className="logo">
-            Ilham<span>Journal</span>
+            Anilhasept<span>Journal</span>
           </div>
         </div>
       </section>
@@ -61,7 +63,7 @@ export default function App() {
             <StatCard label="Total word" value={stats.totalWords} />
             <StatCard label="Days" value={stats.totalDays} />
           </div>
-          <JournalComposer onSave={handleSave} editingEntry={editingEntry} />
+          <JournalComposer onSave={handleSave} />
         </section>
 
         <section className="journal-section" aria-label="Daftar journal">
@@ -82,27 +84,20 @@ export default function App() {
         <PenLine size={28} />
       </button>
 
-      <nav className="bottom-nav" aria-label="Navigasi">
-        <a className="active" href="#home" aria-label="Home">
-          <Home size={24} fill="currentColor" />
-          Home
-        </a>
-      </nav>
-
       {composerOpen && (
-        <div className="composer-overlay" role="dialog" aria-modal="true" aria-label="Tulis journal baru">
-          <button className="composer-backdrop" type="button" aria-label="Tutup popup" onClick={() => setComposerOpen(false)} />
+        <div className="composer-overlay" role="dialog" aria-modal="true" aria-label={editingEntry ? 'Edit journal' : 'Tulis journal baru'}>
+          <button className="composer-backdrop" type="button" aria-label="Tutup popup" onClick={closeComposer} />
           <section className="composer-sheet">
             <div className="composer-sheet-header">
               <div>
-                <p>New journal</p>
-                <h2>Write today</h2>
+                <p>{editingEntry ? 'Edit journal' : 'New journal'}</p>
+                <h2>{editingEntry ? 'Update note' : 'Write today'}</h2>
               </div>
-              <button className="composer-close" type="button" aria-label="Tutup popup" onClick={() => setComposerOpen(false)}>
+              <button className="composer-close" type="button" aria-label="Tutup popup" onClick={closeComposer}>
                 <X size={22} />
               </button>
             </div>
-            <JournalComposer onSave={handlePopupSave} />
+            <JournalComposer onSave={handlePopupSave} editingEntry={editingEntry} />
           </section>
         </div>
       )}

@@ -90,7 +90,7 @@ button {
 .content-panel {
   position: relative;
   margin-top: -22px;
-  padding: 16px clamp(12px, 4.4vw, 18px) calc(110px + env(safe-area-inset-bottom));
+  padding: 16px clamp(12px, 4.4vw, 18px) calc(32px + env(safe-area-inset-bottom));
   border-radius: 28px 28px 0 0;
   background: rgba(247, 247, 250, 0.96);
 }
@@ -369,7 +369,7 @@ button {
   inset: 0;
   z-index: 10;
   min-height: 100%;
-  padding: max(22px, env(safe-area-inset-top)) clamp(16px, 5vw, 22px) calc(106px + env(safe-area-inset-bottom));
+  padding: max(22px, env(safe-area-inset-top)) clamp(16px, 5vw, 22px) calc(28px + env(safe-area-inset-bottom));
   overflow-y: auto;
   background: linear-gradient(160deg, #eef3ff 0%, #f7f4ff 44%, #f8f7fb 100%);
 }
@@ -469,7 +469,7 @@ button {
 .floating-write {
   position: fixed;
   right: calc(16px + env(safe-area-inset-right));
-  bottom: calc(90px + env(safe-area-inset-bottom));
+  bottom: calc(24px + env(safe-area-inset-bottom));
   z-index: 8;
   display: grid;
   place-items: center;
@@ -479,35 +479,6 @@ button {
   background: var(--purple);
   color: white;
   box-shadow: 0 10px 24px rgba(0, 122, 255, 0.34);
-}
-
-.bottom-nav {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 430px;
-  height: calc(78px + env(safe-area-inset-bottom));
-  margin: 0 auto;
-  padding: 10px 20px calc(12px + env(safe-area-inset-bottom));
-  border-radius: 24px 24px 0 0;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 -12px 28px rgba(64, 70, 112, 0.08);
-}
-
-.bottom-nav a {
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  color: var(--purple);
-  font-size: 0.83rem;
-  font-weight: 800;
-  text-decoration: none;
 }
 
 @media (min-width: 431px) {
@@ -538,15 +509,7 @@ button {
 
   .floating-write {
     right: max(24px, calc((100vw - 430px) / 2 + 24px));
-    bottom: calc(91px + env(safe-area-inset-bottom));
-  }
-
-  .bottom-nav {
-    right: auto;
-    left: 50%;
-    width: min(100vw, 430px);
-    border-radius: 24px 24px 34px 34px;
-    transform: translateX(-50%);
+    bottom: calc(24px + env(safe-area-inset-bottom));
   }
 }
 
