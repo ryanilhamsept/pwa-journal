@@ -733,3 +733,176 @@ button {
   top: auto;
   bottom: 56px;
 }
+
+/* Passcode Lock Styles */
+.passcode-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.94), transparent 30%),
+              linear-gradient(115deg, #f8f5ff 0%, #e6e8ff 48%, #f7f5ff 100%);
+  backdrop-filter: blur(10px);
+}
+
+.passcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  padding: 24px;
+}
+
+.passcode-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.passcode-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: white;
+  color: var(--purple);
+  box-shadow: 0 10px 24px rgba(0, 122, 255, 0.15);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.passcode-icon-wrapper.error {
+  color: #d63a55;
+  background: #fff1f3;
+  box-shadow: 0 10px 24px rgba(214, 58, 85, 0.2);
+}
+
+.passcode-header h2 {
+  font-size: 1.5rem;
+  font-weight: 850;
+  margin: 0 0 8px 0;
+  color: var(--ink);
+}
+
+.passcode-header p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+  font-weight: 600;
+}
+
+.passcode-header p.text-error {
+  color: #d63a55;
+  font-weight: 700;
+}
+
+.passcode-dots {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.passcode-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.passcode-dot.filled {
+  background: var(--purple);
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(10, 132, 255, 0.4);
+}
+
+.passcode-dot.error {
+  border-color: #d63a55;
+}
+
+.passcode-dot.error.filled {
+  background: #d63a55;
+  box-shadow: 0 0 8px rgba(214, 58, 85, 0.4);
+}
+
+.passcode-keyboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px 24px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.key-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: white;
+  color: var(--ink);
+  font-size: 1.75rem;
+  font-weight: 650;
+  box-shadow: 0 4px 12px rgba(64, 70, 112, 0.05);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.key-btn:active {
+  transform: scale(0.9);
+  background: var(--purple-soft);
+  color: var(--purple);
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.15);
+}
+
+.key-btn.action-btn {
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+}
+
+.key-btn.action-btn:active {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--ink);
+}
+
+.passcode-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Shake Animation */
+.shake {
+  animation: shake 0.5s linear;
+}
+
+@keyframes shake {
+  8%, 41% {
+    transform: translateX(-10px);
+  }
+  25%, 58% {
+    transform: translateX(10px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  92% {
+    transform: translateX(5px);
+  }
+  0%, 100% {
+    transform: translateX(0);
+  }
+}
+

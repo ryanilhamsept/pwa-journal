@@ -4,6 +4,7 @@ import JournalComposer from '../components/JournalComposer';
 import JournalDetail from '../components/JournalDetail';
 import JournalList from '../components/JournalList';
 import StatCard from '../components/ui/StatCard';
+import PasscodeLock from '../components/PasscodeLock';
 import { useJournals } from '../hooks/useJournals';
 
 export default function App() {
@@ -11,6 +12,11 @@ export default function App() {
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [editingEntry, setEditingEntry] = useState(null);
   const [composerOpen, setComposerOpen] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  if (!isUnlocked) {
+    return <PasscodeLock onUnlock={() => setIsUnlocked(true)} />;
+  }
 
   function handleSave(payload) {
     return saveEntry(payload);
