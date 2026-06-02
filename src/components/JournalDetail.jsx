@@ -1,35 +1,57 @@
-import { ChevronLeft } from 'lucide-react';
-import { formatDateTime, getPreview } from '../utils/date';
+import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { formatDateTime } from '../utils/date';
 
 export default function JournalDetail({ entry, onClose, onEdit, onDelete }) {
   if (!entry) return null;
 
   return (
     <section className="detail-view" aria-label="Detail journal">
-      <header className="detail-header">
-        <button className="back-button" type="button" aria-label="Kembali" onClick={onClose}>
-          <ChevronLeft size={32} strokeWidth={3} />
+      <header className="document-detail-header">
+        <button
+          className="circular-back-button"
+          type="button"
+          aria-label="Kembali"
+          onClick={onClose}
+        >
+          <ArrowLeft size={24} />
         </button>
-        <div>
-          <p>Journal detail</p>
-          <h2>{entry.title || getPreview(entry.body, 42)}</h2>
+
+        <div className="detail-header-actions">
+          <div className="detail-mood-badge" aria-label={`Mood: ${entry.mood}`}>
+            {entry.mood}
+          </div>
+          
+          <button
+            className="header-action-btn edit-btn"
+            type="button"
+            aria-label="Edit catatan"
+            onClick={() => onEdit(entry)}
+          >
+            <Edit size={20} />
+          </button>
+          
+          <button
+            className="header-action-btn delete-btn"
+            type="button"
+            aria-label="Hapus catatan"
+            onClick={() => onDelete(entry)}
+          >
+            <Trash2 size={20} />
+          </button>
         </div>
       </header>
 
-      <article className="detail-card">
-        <div className="detail-mood">{entry.mood}</div>
+      <main className="document-detail-body">
         <p className="detail-date">{formatDateTime(entry.createdAt)}</p>
-        {entry.title && <h1 className="detail-title">{entry.title}</h1>}
-        <p className="detail-body">{entry.body}</p>
-        <div className="detail-actions">
-          <button className="detail-action edit" type="button" onClick={() => onEdit(entry)}>
-            Edit
-          </button>
-          <button className="detail-action delete" type="button" onClick={() => onDelete(entry)}>
-            Delete
-          </button>
+        <h1 className="detail-title">{entry.title || 'Catatan Tanpa Judul'}</h1>
+        <div className="detail-body-content">
+          {entry.body.split('\n').map((paragraph, index) => (
+            <p key={index} className="detail-paragraph">
+              {paragraph}
+            </p>
+          ))}
         </div>
-      </article>
+      </main>
     </section>
   );
 }
