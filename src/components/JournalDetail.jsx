@@ -1,5 +1,5 @@
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
-import { formatDateTime } from '../utils/date';
+import { formatDateTime, getPreview } from '../utils/date';
 
 export default function JournalDetail({ entry, onClose, onEdit, onDelete }) {
   if (!entry) return null;
@@ -43,7 +43,7 @@ export default function JournalDetail({ entry, onClose, onEdit, onDelete }) {
 
       <main className="document-detail-body">
         <p className="detail-date">{formatDateTime(entry.createdAt)}</p>
-        <h1 className="detail-title">{entry.title || 'Catatan Tanpa Judul'}</h1>
+        <h1 className="detail-title">{entry.title || getPreview(entry.body, 22) || 'Catatan Tanpa Judul'}</h1>
         <div className="detail-body-content">
           {entry.body.split('\n').map((paragraph, index) => (
             <p key={index} className="detail-paragraph">

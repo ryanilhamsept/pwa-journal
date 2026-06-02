@@ -43,15 +43,28 @@ function mergeSheetSnapshot(localEntries, sheetEntries) {
     )
     .filter((entry) => entry.body.trim());
 
-  const localOnlyItems = localEntries
-    .map(normalizeEntry)
-    .filter((entry) => entry.body.trim() && entry.syncStatus !== 'synced');
+  const localMap = new Map();
+  for (const entry of localEntries) {
+    localMap.set(entry.syncId || entry.id, entry);
+  }
 
   const merged = new Map();
 
   for (const entry of sheetItems) {
-    merged.set(entry.syncId || entry.id, entry);
+    const key = entry.syncId || entry.id;
+    const local = localMap.get(key);
+    
+    // Preserve local title if the sheet entry has an empty/missing title
+    if (local && local.title && !entry.title) {
+      entry.title = local.title;
+    }
+    
+    merged.set(key, entry);
   }
+
+  const localOnlyItems = localEntries
+    .map(normalizeEntry)
+    .filter((entry) => entry.body.trim() && entry.syncStatus !== 'synced');
 
   for (const entry of localOnlyItems) {
     const key = entry.syncId || entry.id;

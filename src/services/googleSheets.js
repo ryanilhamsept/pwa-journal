@@ -1,4 +1,4 @@
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxPade43GSg4MbHM9bSHhC1FrmQS2PqgvWQ0u-vO4VJTkvsAilnsjnCuwomHgBaJ15wrQ/exec';
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyTPQh8dww8N5wvyEuk6TFL_e4dsJnBFh5lFBZHtQZWazIviAogN-NkUbjbL3Y12n3RVA/exec';
 
 async function requestSheet(payload) {
   const response = await fetch(WEBHOOK_URL, {
