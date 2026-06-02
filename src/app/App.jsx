@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pen, X, Home, Search, List, Calendar, Menu } from 'lucide-react';
+import { Pen } from 'lucide-react';
 import JournalComposer from '../components/JournalComposer';
 import JournalDetail from '../components/JournalDetail';
 import JournalList from '../components/JournalList';
@@ -95,26 +95,6 @@ export default function App() {
           <JournalList entries={entries} isLoading={isLoadingSheet} onView={setSelectedEntry} />
         </section>
       </section>
-
-      <nav className="floating-nav-pill">
-        <button className="nav-tab active" type="button" aria-label="Home">
-          <div className="tab-circle">
-            <Home size={20} />
-          </div>
-        </button>
-        <button className="nav-tab" type="button" aria-label="Search">
-          <Search size={20} />
-        </button>
-        <button className="nav-tab" type="button" aria-label="List">
-          <List size={20} />
-        </button>
-        <button className="nav-tab" type="button" aria-label="Calendar">
-          <Calendar size={20} />
-        </button>
-        <button className="nav-tab" type="button" aria-label="Menu">
-          <Menu size={20} />
-        </button>
-      </nav>
 
       {composerOpen && (
         <JournalComposer
