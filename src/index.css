@@ -1037,15 +1037,15 @@ button {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffca28, #ff8f00);
+  background: linear-gradient(135deg, #a8caff, #7ea6ff);
   color: white;
-  box-shadow: 0 4px 14px rgba(255, 143, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(126, 166, 255, 0.35);
   transition: all 0.2s ease;
 }
 
 .yellow-check-button:active {
   transform: scale(0.9);
-  box-shadow: 0 2px 6px rgba(255, 143, 0, 0.25);
+  box-shadow: 0 2px 6px rgba(126, 166, 255, 0.25);
 }
 
 .detail-header-actions {
