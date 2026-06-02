@@ -1,5 +1,5 @@
 const SHEET_NAME = 'Journals';
-const HEADERS = ['id', 'createdAt', 'updatedAt', 'mood', 'body', 'deletedAt'];
+const HEADERS = ['id', 'createdAt', 'updatedAt', 'mood', 'body', 'deletedAt', 'title'];
 
 function doGet() {
   return jsonResponse(listEntries_());
@@ -123,6 +123,7 @@ function normalizeEntry_(entry) {
     mood: entry.mood || '😊',
     body: entry.body || '',
     deletedAt: entry.deletedAt || '',
+    title: entry.title || '',
   };
 }
 

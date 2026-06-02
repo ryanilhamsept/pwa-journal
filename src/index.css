@@ -983,3 +983,39 @@ button {
   }
 }
 
+/* Journal Title Styles */
+.composer-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.composer-title-input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-weight: 850;
+  font-size: clamp(0.95rem, 4.3vw, 1.1rem);
+  padding: 0;
+}
+
+.composer-title-input::placeholder {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.composer-title-input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.detail-title {
+  margin: 0 0 16px;
+  font-size: clamp(1.4rem, 6vw, 1.8rem);
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--ink);
+}
+

@@ -18,6 +18,7 @@ function normalizeEntry(entry) {
 
   return {
     id: entry.id || crypto.randomUUID(),
+    title: entry.title || '',
     body: entry.body || '',
     mood: entry.mood || '😊',
     syncId,
@@ -184,9 +185,10 @@ export function useJournals() {
     }
   }
 
-  function saveEntry({ body, mood, editingId }) {
-    const trimmed = body.trim();
-    if (!trimmed) return null;
+  function saveEntry({ title, body, mood, editingId }) {
+    const trimmedBody = body.trim();
+    const trimmedTitle = (title || '').trim();
+    if (!trimmedBody) return null;
 
     const now = new Date().toISOString();
 
@@ -197,7 +199,8 @@ export function useJournals() {
           if (entry.id !== editingId) return entry;
           updatedEntry = {
             ...entry,
-            body: trimmed,
+            title: trimmedTitle,
+            body: trimmedBody,
             mood,
             updatedAt: now,
             syncStatus: 'pending',
@@ -211,7 +214,8 @@ export function useJournals() {
 
     const entry = normalizeEntry({
       id: crypto.randomUUID(),
-      body: trimmed,
+      title: trimmedTitle,
+      body: trimmedBody,
       mood,
       syncStatus: 'pending',
       createdAt: now,

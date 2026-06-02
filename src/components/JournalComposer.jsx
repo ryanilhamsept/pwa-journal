@@ -4,20 +4,28 @@ import { ChevronRight } from 'lucide-react';
 const MOODS = ['😊', '😁', '😌', '🥲', '😐', '😔'];
 
 export default function JournalComposer({ onSave, editingEntry }) {
+  const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [mood, setMood] = useState('😊');
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!editingEntry) return;
-    setBody(editingEntry.body);
-    setMood(editingEntry.mood);
+    if (!editingEntry) {
+      setTitle('');
+      setBody('');
+      setMood('😊');
+      return;
+    }
+    setTitle(editingEntry.title || '');
+    setBody(editingEntry.body || '');
+    setMood(editingEntry.mood || '😊');
   }, [editingEntry]);
 
   function submit(event) {
     event.preventDefault();
-    const saved = onSave({ body, mood });
+    const saved = onSave({ title, body, mood });
     if (!saved) return;
+    setTitle('');
     setBody('');
     setMood('😊');
   }
@@ -53,16 +61,23 @@ export default function JournalComposer({ onSave, editingEntry }) {
         )}
       </div>
 
-      <label>
-        <span>{editingEntry ? 'Edit your journal' : 'How are you feeling today?'}</span>
+      <div className="composer-inputs">
+        <input
+          type="text"
+          value={title}
+          placeholder="Judul catatan..."
+          className="composer-title-input"
+          aria-label="Judul catatan"
+          onChange={(event) => setTitle(event.target.value)}
+        />
         <textarea
           rows="1"
           value={body}
-          placeholder="I'm very happy"
+          placeholder={editingEntry ? 'Edit your journal' : 'How are you feeling today?'}
           aria-label="Tulis catatan"
           onChange={(event) => setBody(event.target.value)}
         />
-      </label>
+      </div>
 
       <button type="submit" className="save-button" aria-label="Simpan catatan">
         <ChevronRight size={30} strokeWidth={4} />

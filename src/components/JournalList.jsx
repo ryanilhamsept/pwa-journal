@@ -41,7 +41,7 @@ export default function JournalList({ entries, isLoading, onView }) {
           <div className="journal-card-top">
             <div className="journal-mood">{entry.mood}</div>
             <div>
-              <div className="journal-title">{getPreview(entry.body)}</div>
+              <div className="journal-title">{entry.title || getPreview(entry.body)}</div>
               <div className="journal-meta">{formatDateTime(entry.createdAt)}</div>
             </div>
             <div className="journal-tag">{entry.syncStatus === 'synced' ? 'Sheet' : 'Local'}</div>

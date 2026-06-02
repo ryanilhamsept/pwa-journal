@@ -12,13 +12,14 @@ export default function JournalDetail({ entry, onClose, onEdit, onDelete }) {
         </button>
         <div>
           <p>Journal detail</p>
-          <h2>{getPreview(entry.body, 42)}</h2>
+          <h2>{entry.title || getPreview(entry.body, 42)}</h2>
         </div>
       </header>
 
       <article className="detail-card">
         <div className="detail-mood">{entry.mood}</div>
         <p className="detail-date">{formatDateTime(entry.createdAt)}</p>
+        {entry.title && <h1 className="detail-title">{entry.title}</h1>}
         <p className="detail-body">{entry.body}</p>
         <div className="detail-actions">
           <button className="detail-action edit" type="button" onClick={() => onEdit(entry)}>
