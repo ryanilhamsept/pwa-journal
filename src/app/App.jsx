@@ -53,7 +53,7 @@ export default function App() {
   }
 
   return (
-    <main className="phone-shell" aria-label="Ilham Journal">
+    <main className="app-container" aria-label="Ilham Journal">
       <section className="hero-panel">
         <div className="app-header">
           <div className="logo">
