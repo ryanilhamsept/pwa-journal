@@ -3,11 +3,11 @@ import { getPreview } from '../utils/date';
 
 function LoadingCard() {
   return (
-    <div className="journal-loading" aria-label="Loading journal dari Sheet">
+    <div className="journal-loading" aria-label="Loading journal dari Supabase">
       <div className="loading-spinner" />
       <div>
         <strong>Loading journal</strong>
-        <p>Syncing from Google Sheet...</p>
+        <p>Syncing from Supabase...</p>
       </div>
     </div>
   );

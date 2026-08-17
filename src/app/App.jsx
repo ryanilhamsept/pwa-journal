@@ -1,21 +1,46 @@
-import { useState } from 'react';
-import { Pen } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { LogOut, Pen } from 'lucide-react';
 import JournalComposer from '../components/JournalComposer';
 import JournalDetail from '../components/JournalDetail';
 import JournalList from '../components/JournalList';
 import StatCard from '../components/ui/StatCard';
-import PasscodeLock from '../components/PasscodeLock';
+import Login from '../components/Login';
 import { useJournals } from '../hooks/useJournals';
+import { supabase } from '../services/supabaseClient';
 
 export default function App() {
-  const { entries, stats, isLoadingSheet, saveEntry, removeEntry } = useJournals();
+  const { entries, stats, isLoadingRemote, saveEntry, removeEntry } = useJournals();
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [editingEntry, setEditingEntry] = useState(null);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
-  if (!isUnlocked) {
-    return <PasscodeLock onUnlock={() => setIsUnlocked(true)} />;
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsCheckingSession(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (isCheckingSession) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-[#0a051b] text-white">
+        <p className="text-base font-semibold">Checking session...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Login />;
   }
 
   function handleSave(payload) {
@@ -67,32 +92,42 @@ export default function App() {
             <h1>{getGreeting()}, Ryan</h1>
             <p>Let's capture something new today.</p>
           </div>
-          <button
-            className="circular-write-icon-btn"
-            type="button"
-            aria-label="Tulis journal baru"
-            onClick={openComposer}
-          >
-            <Pen size={18} />
-          </button>
+          <div className="header-actions">
+            <button
+              className="circular-write-icon-btn"
+              type="button"
+              aria-label="Tulis journal baru"
+              onClick={openComposer}
+            >
+              <Pen size={18} />
+            </button>
+            <button
+              className="circular-write-icon-btn"
+              type="button"
+              aria-label="Keluar"
+              onClick={() => supabase.auth.signOut()}
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
         </div>
       </section>
 
       <section className="content-panel">
-        <section className="stats-card" aria-label="Ringkasan journal">
-          <div className="stats-grid">
-            <StatCard label="Total journal" value={stats.totalJournal} />
-            <StatCard label="Total word" value={stats.totalWords} />
-            <StatCard label="Days" value={stats.totalDays} />
-          </div>
-        </section>
-
         <section className="journal-section" aria-label="Daftar journal">
           <div className="section-heading">
             <h1>Recently Added</h1>
-            <p className="section-meta-count">{entries.length} {entries.length === 1 ? 'Note' : 'Notes'}</p>
           </div>
-          <JournalList entries={entries} isLoading={isLoadingSheet} onView={setSelectedEntry} />
+
+          <section className="stats-card" aria-label="Ringkasan journal">
+            <div className="stats-grid">
+              <StatCard label="Total journal" value={stats.totalJournal} />
+              <StatCard label="Total word" value={stats.totalWords} />
+              <StatCard label="Days" value={stats.totalDays} />
+            </div>
+          </section>
+
+          <JournalList entries={entries} isLoading={isLoadingRemote} onView={setSelectedEntry} />
         </section>
       </section>
 

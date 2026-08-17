@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { createJournal, deleteJournal, listJournals, updateJournal } from '../services/googleSheets';
+import { createJournal, deleteJournal, listJournals, updateJournal } from '../services/journals';
 import { getDayKey } from '../utils/date';
 
 const STORAGE_KEY = 'ilham-journal.entries';
@@ -32,8 +32,8 @@ function sortEntries(entries) {
   return [...entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
-function mergeSheetSnapshot(localEntries, sheetEntries) {
-  const sheetItems = sheetEntries
+function mergeRemoteSnapshot(localEntries, remoteEntries) {
+  const remoteItems = remoteEntries
     .map((entry) =>
       normalizeEntry({
         ...entry,
@@ -50,11 +50,11 @@ function mergeSheetSnapshot(localEntries, sheetEntries) {
 
   const merged = new Map();
 
-  for (const entry of sheetItems) {
+  for (const entry of remoteItems) {
     const key = entry.syncId || entry.id;
     const local = localMap.get(key);
     
-    // Preserve local title if the sheet entry has an empty/missing title
+    // Preserve local title if the remote entry has an empty/missing title
     if (local && local.title && !entry.title) {
       entry.title = local.title;
     }
@@ -78,43 +78,43 @@ export function useJournals() {
   const [entries, setEntries] = useState(() =>
     sortEntries(loadEntries().map(normalizeEntry).filter((entry) => entry.body.trim())),
   );
-  const [isLoadingSheet, setIsLoadingSheet] = useState(true);
+  const [isLoadingRemote, setIsLoadingRemote] = useState(true);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   }, [entries]);
 
-  const refreshFromSheet = useCallback(async ({ showLoading = false } = {}) => {
-    if (showLoading) setIsLoadingSheet(true);
+  const refreshFromRemote = useCallback(async ({ showLoading = false } = {}) => {
+    if (showLoading) setIsLoadingRemote(true);
 
     try {
-      const sheetEntries = await listJournals();
-      setEntries((current) => mergeSheetSnapshot(current, sheetEntries));
+      const remoteEntries = await listJournals();
+      setEntries((current) => mergeRemoteSnapshot(current, remoteEntries));
     } catch {
-      // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum bisa diakses.
+      // App tetap bisa dipakai offline/lokal kalau endpoint Supabase belum bisa diakses.
     } finally {
-      if (showLoading) setIsLoadingSheet(false);
+      if (showLoading) setIsLoadingRemote(false);
     }
   }, []);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadFromSheet() {
-      setIsLoadingSheet(true);
+    async function loadFromRemote() {
+      setIsLoadingRemote(true);
 
       try {
-        const sheetEntries = await listJournals();
+        const remoteEntries = await listJournals();
         if (cancelled) return;
-        setEntries((current) => mergeSheetSnapshot(current, sheetEntries));
+        setEntries((current) => mergeRemoteSnapshot(current, remoteEntries));
       } catch {
-        // App tetap bisa dipakai offline/lokal kalau endpoint Sheet belum bisa diakses.
+        // App tetap bisa dipakai offline/lokal kalau endpoint Supabase belum bisa diakses.
       } finally {
-        if (!cancelled) setIsLoadingSheet(false);
+        if (!cancelled) setIsLoadingRemote(false);
       }
     }
 
-    loadFromSheet();
+    loadFromRemote();
 
     return () => {
       cancelled = true;
@@ -124,18 +124,18 @@ export function useJournals() {
   useEffect(() => {
     function refreshWhenVisible() {
       if (document.visibilityState === 'visible') {
-        refreshFromSheet();
+        refreshFromRemote();
       }
     }
 
-    window.addEventListener('focus', refreshFromSheet);
+    window.addEventListener('focus', refreshFromRemote);
     document.addEventListener('visibilitychange', refreshWhenVisible);
 
     return () => {
-      window.removeEventListener('focus', refreshFromSheet);
+      window.removeEventListener('focus', refreshFromRemote);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
-  }, [refreshFromSheet]);
+  }, [refreshFromRemote]);
 
   const stats = useMemo(() => {
     const totalWords = entries.reduce(
@@ -247,7 +247,7 @@ export function useJournals() {
     try {
       await deleteJournal(entry.syncId);
     } catch {
-      // Kalau delete ke Sheet gagal, data lokal tetap sudah bersih.
+      // Kalau delete ke Supabase gagal, data lokal tetap sudah bersih.
     }
   }
 
@@ -265,8 +265,8 @@ export function useJournals() {
   return {
     entries,
     stats,
-    isLoadingSheet,
-    refreshFromSheet,
+    isLoadingRemote,
+    refreshFromRemote,
     saveEntry,
     removeEntry,
     retryUnsynced,

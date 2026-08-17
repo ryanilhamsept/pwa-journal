@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   color-scheme: light;
   --ink: #17151f;
@@ -103,7 +105,7 @@ button {
 
 .stats-card {
   padding: clamp(13px, 3.8vw, 16px) clamp(9px, 3.8vw, 14px) 14px;
-  margin-bottom: 24px;
+  margin: 24px 0;
 }
 
 .stats-grid {
@@ -503,20 +505,10 @@ button {
   }
 
   .content-panel {
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 32px;
-    align-items: start;
     margin-top: -36px;
     padding: 24px 32px 48px;
     border-radius: 28px 28px 0 0;
     background: rgba(247, 247, 250, 0.98);
-  }
-
-  .stats-card {
-    margin-bottom: 0;
-    position: sticky;
-    top: 24px;
   }
 
   .journal-section {
@@ -1387,6 +1379,12 @@ button {
   font-size: clamp(0.8rem, 3.5vw, 0.9rem);
   font-weight: 650;
   color: var(--muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .circular-write-icon-btn {
