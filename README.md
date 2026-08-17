@@ -6,15 +6,14 @@ React/Vite journal app with Supabase sync.
 
 ```sh
 npm install
-cp .env.example .env.local
-# fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+# create .env.local with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 npm run dev
 ```
 
 ## Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Run [`supabase/schema.sql`](supabase/schema.sql) in the SQL Editor to create the `journals` table.
+2. In the SQL Editor, create a `journals` table (`id`, `title`, `body`, `mood`, `created_at`, `updated_at`) with row level security restricted to authenticated users.
 3. Copy the Project URL and anon public key from Settings > API into `.env.local`.
 
 Supabase sync is configured in:
